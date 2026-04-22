@@ -1,0 +1,26 @@
+services:
+
+  db-pg18-pd:
+    container_name: cnt-pg18-pd
+    image: postgres:18
+    restart: always
+    # Establecer un limite de memoria compartida.
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: products_db
+      PGDATA: /data/postgres
+    volumes:
+      - db-pg18-pd:/data/postgres
+    ports:
+      - "5434:5432"
+    networks:
+      - net-tm
+
+volumes:
+  db-pg18-pd:
+
+networks:
+  net-tm:
+    driver: bridge
