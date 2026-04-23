@@ -27,4 +27,8 @@ drop TABLE public.purchase;
 insert into public.users (identityCard, lastName, name)
 values ('1720281979', 'Vivero', 'Javier')
 select *
-from public.products
+from public.purchase;
+
+update public.products set stock = 50;
+
+delete from public.purchase

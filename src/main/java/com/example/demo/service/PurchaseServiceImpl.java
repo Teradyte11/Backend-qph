@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,9 +41,11 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
+    @SuppressWarnings({ "unused", "static-access" })
     public PurchaseDto create(PurchaseDto dto) {
         Integer availableStock = 0;
         Integer finalStock = 0;
+        BigDecimal finalPrice = new BigDecimal("20.0");
         availableStock = productRepository.findStockById(dto.getProduct_id());
         if (availableStock == 0) {
             throw new CValidationException("Producto sin stock");
@@ -54,8 +57,17 @@ public class PurchaseServiceImpl implements PurchaseService {
         if (finalStock < 0) {
             throw new CValidationException("No existe stock suficiente.");
         }
+        finalPrice = productRepository.findPriceById(dto.getProduct_id());
+        System.out.println("----ENTRA----");
+        System.out.println(dto);
+        // System.out.println(finalPrice);
+        if (finalPrice.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new CValidationException("El precio por producto no puede ser menor a0.");
+        }
+        finalPrice = finalPrice.multiply(BigDecimal.valueOf(dto.getAmount()));
+        System.out.println(finalPrice);
         productRepository.updateStockById(dto.getProduct_id(), finalStock);
-        Purchase purchase = toEntity(dto);
+        Purchase purchase = toEntity(dto, finalPrice);
         return toDTO(repository.save(purchase));
     }
 
@@ -81,7 +93,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .build();
     }
 
-    private Purchase toEntity(PurchaseDto dto) {
+    private Purchase toEntity(PurchaseDto dto, BigDecimal finalPrice) {
         User user = new User();
         Product product = new Product();
         user.setId(dto.getUser_id());
@@ -89,7 +101,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         return Purchase.builder()
                 .id(dto.getId())
                 .amount(dto.getAmount())
-                .price(dto.getPrice())
+                .price(finalPrice)
                 .user(user)
                 .product(product)
                 .build();

@@ -22,14 +22,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class Purchase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    @NotNull
-    @Positive(message = "El precio debe ser positivo")
+    @Column
+    // @NotNull
+    // @Positive(message = "El precio debe ser positivo")
     private BigDecimal price;
     @Column(nullable = false)
     @NotNull
